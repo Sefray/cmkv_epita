@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
   Tetravex game(in_file);
   game.display();
 
-  game.resolve();
+  solve(game);
 
   game.write(out_file);
 }

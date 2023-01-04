@@ -10,12 +10,12 @@ main:
 
 test:
 	$(CXX) $(CXXFLAGS) -DTEST $(SRC) -o test -lcriterion
-	
+
 check: test
-	./test
+	./test --verbose
 
 bench:
-	$(CXX) $(CXXFLAGS) -DBENCH $(SRC)  -o bench
+	$(CXX) $(CXXFLAGS) -DBENCH $(SRC) -o bench
 
 clean:
 	$(RM) a.out *.o test bench

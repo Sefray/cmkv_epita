@@ -26,6 +26,8 @@ public:
   Tile& get_tile(int x, int y);
 
   void display();
-  void resolve();
   void write(std::string file_out);
 };
+
+void solve(Tetravex& game);
+int  get_error_count(Tetravex& game);
