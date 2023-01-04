@@ -4,12 +4,6 @@
 #include <iostream>
 #include <sstream>
 
-/**
- * @brief Get the index of the char after the last slash last
- *
- * @param str The string in which we want to find the last slash
- * @return int The position after the last slash in the string or 0 if there is no slash
- */
 int get_after_slash_last_position(std::string str)
 {
   int pos = str.find_last_of('/');

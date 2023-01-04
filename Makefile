@@ -15,7 +15,7 @@ check: test
 	./test --verbose
 
 bench:
-	$(CXX) $(CXXFLAGS) -DBENCH $(SRC) -o bench
+	$(CXX) $(CXXFLAGS) -DBENCH $(SRC) -o bench -lbenchmark
 
 clean:
 	$(RM) a.out *.o test bench
