@@ -61,14 +61,9 @@ Tetravex::Tetravex(std::string filename)
   }
 }
 
-void Tetravex::resolve()
+void Tetravex::write(std::string file_out)
 {
-  // TODO
-}
-
-void Tetravex::write(std::string filename)
-{
-  std::ofstream file(filename);
+  std::ofstream file(file_out);
   if (!file.is_open())
   {
     std::cout << "Unable to open file" << std::endl;
@@ -84,4 +79,9 @@ void Tetravex::write(std::string filename)
   }
 
   file.close();
+}
+
+Tile& Tetravex::get_tile(int x, int y)
+{
+  return tiles[x + y * size];
 }

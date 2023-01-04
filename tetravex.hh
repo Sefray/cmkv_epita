@@ -8,23 +8,24 @@ enum Direction
   WEST
 };
 
+class Tile
+{
+public:
+  bool is_locked;
+  int  value[4];
+};
+
 class Tetravex
 {
-  class Tile
-  {
-  public:
-    bool is_locked;
-    int  value[4];
-  };
-
-private:
-  Tile* tiles;
-  int   size;
-
 public:
-  Tetravex(std::string);
+  int   size;
+  Tile* tiles;
 
+  Tetravex(std::string file_in);
+
+  Tile& get_tile(int x, int y);
+
+  void display();
   void resolve();
-  void write(std::string);
-  void display(std::string);
+  void write(std::string file_out);
 };

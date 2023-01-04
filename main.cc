@@ -15,6 +15,9 @@ int main(int argc, char* argv[])
   std::string out_file = argv[2];
 
   Tetravex game(in_file);
+  game.display();
+
   game.resolve();
+  
   game.write(out_file);
 }
