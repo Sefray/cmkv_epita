@@ -3,6 +3,9 @@
 
 #include "tetravex.hh"
 
+#ifndef BENCH
+#ifndef TEST
+
 int main(int argc, char* argv[])
 {
   if (argc != 3)
@@ -18,6 +21,9 @@ int main(int argc, char* argv[])
   game.display();
 
   game.resolve();
-  
+
   game.write(out_file);
 }
+
+#endif
+#endif

@@ -3,9 +3,9 @@
 enum Direction
 {
   NORTH,
+  WEST,
   EAST,
   SOUTH,
-  WEST
 };
 
 class Tile

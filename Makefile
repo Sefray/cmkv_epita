@@ -8,5 +8,16 @@ all: main
 main:
 	$(CXX) $(CXXFLAGS) $(SRC)
 
+test:
+	$(CXX) $(CXXFLAGS) -DTEST $(SRC) -o test -lcriterion
+	
+check: test
+	./test
+
+bench:
+	$(CXX) $(CXXFLAGS) -DBENCH $(SRC)  -o bench
+
 clean:
-	$(RM) a.out *.o
+	$(RM) a.out *.o test bench
+
+.PHONY: all test bench clean
