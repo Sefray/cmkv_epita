@@ -79,3 +79,8 @@ Tile& Tetravex::get_tile(int x, int y)
 {
   return tiles[x + y * size];
 }
+
+void Tetravex::swap_tiles(int a, int b)
+{
+  std::swap(tiles[a], tiles[b]);
+}

@@ -22,6 +22,7 @@ int main(int argc, char* argv[])
 
   solve(game);
 
+  game.display();
   game.write(out_file);
 }
 
