@@ -15,10 +15,16 @@ Test(tetravex, load)
   cr_assert_eq(game.tiles[3].value[SOUTH], 5);
 }
 
-Test(tetravex, error_count)
+Test(tetravex, error_count_s2_02)
 {
   Tetravex game("data/input/s2-02.txt");
   cr_assert_eq(get_error_count(game), 2);
+}
+
+Test(tetravex, error_count_s5_04)
+{
+  Tetravex game("data/input/s5-04.txt");
+  cr_assert_eq(get_error_count(game), 29);
 }
 
 #endif
