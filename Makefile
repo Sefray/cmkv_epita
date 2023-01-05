@@ -3,7 +3,7 @@ CXXFLAGS=-DNDEBUG -O5 -std=c++17 -lpthread -Wl,--no-as-needed
 
 SRC= *.cc
 
-all: main
+all: main test bench
 
 main:
 	$(CXX) $(CXXFLAGS) $(SRC)

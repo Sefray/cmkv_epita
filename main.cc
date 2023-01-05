@@ -8,21 +8,23 @@
 
 int main(int argc, char* argv[])
 {
-  if (argc != 3)
+  if (argc < 2)
   {
-    std::cout << "Usage: " << argv[0] << " in.txt out.txt" << std::endl;
+    std::cout << "Usage: " << argv[0] << " in.txt [out.txt]" << std::endl;
     return 1;
   }
 
-  std::string in_file  = argv[1];
-  std::string out_file = argv[2];
+  bool verbose = argc == 2;
+
+  std::string in_file = argv[1];
 
   Tetravex game(in_file);
-  game.display();
+  solve(game, 1000, verbose);
 
-  solve(game);
+  if (verbose)
+    return 0;
 
-  game.display();
+  std::string out_file = argv[2];
   game.write(out_file);
 }
 

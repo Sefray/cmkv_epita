@@ -2,25 +2,11 @@
 
 #include <benchmark/benchmark.h>
 
-#include <filesystem>
 #include <iostream>
 #include <string>
-namespace fs = std::filesystem;
 
 #include "tetravex.hh"
-
-std::vector<std::string> get_file_list(int n)
-{
-  std::vector<std::string> file_list;
-  for (const auto& entry : fs::directory_iterator("data/input"))
-  {
-    std::string filename = entry.path().filename();
-    if (filename[1] == '0' + n)
-      file_list.push_back(entry.path());
-  }
-
-  return file_list;
-}
+#include "utils.hh"
 
 static void Tetravex_n(benchmark::State& state, int n)
 {
@@ -38,6 +24,11 @@ static void Tetravex_n(benchmark::State& state, int n)
   state.SetItemsProcessed(state.iterations() * file_in.size());
 }
 
+static void BM_Tetravex_s2(benchmark::State& state)
+{
+  Tetravex_n(state, 2);
+}
+
 static void BM_Tetravex_s4(benchmark::State& state)
 {
   Tetravex_n(state, 4);
@@ -49,6 +40,7 @@ static void BM_Tetravex_s6(benchmark::State& state)
 }
 
 
+BENCHMARK(BM_Tetravex_s2)->Unit(benchmark::kSecond);
 BENCHMARK(BM_Tetravex_s4)->Unit(benchmark::kSecond);
 BENCHMARK(BM_Tetravex_s6)->Unit(benchmark::kSecond);
 
