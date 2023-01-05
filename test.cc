@@ -31,13 +31,19 @@ Test(tetravex, error_count_s5_04)
 void test_full(int n)
 {
   auto file_list = get_file_list(n);
+
+  int passed = 0;
   for (int i = 0; i < file_list.size(); i++)
   {
     Tetravex game(file_list[i]);
     solve(game);
-    cr_assert_eq(get_error_count(game), 0, "Error for File: %s, passed %d over %d", file_list[i].c_str(), i,
-                 file_list.size());
+    auto err = get_error_count(game);
+    // cr_expect_eq(err, 0, "Error for File: %s", file_list[i].c_str());
+    if (err == 0)
+      passed++;
   }
+
+  cr_assert_eq(passed, file_list.size(), "Passed %d over %d", passed, file_list.size());
 }
 
 Test(tetravex, s2_full)
@@ -50,19 +56,19 @@ Test(tetravex, s3_full)
   test_full(3);
 }
 
-// Test(tetravex, s4_full)
-// {
-//   test_full(4);
-// }
+Test(tetravex, s4_full)
+{
+  test_full(4);
+}
 
-// Test(tetravex, s5_full)
-// {
-//   test_full(5);
-// }
+Test(tetravex, s5_full)
+{
+  test_full(5);
+}
 
-// Test(tetravex, s6_full)
-// {
-//   test_full(6);
-// }
+Test(tetravex, s6_full)
+{
+  test_full(6);
+}
 
 #endif

@@ -80,44 +80,44 @@ std::vector<std::tuple<int, int>> get_all_moves(Tetravex& game)
   return moves;
 }
 
-float get_error_move(Tetravex& game, std::vector<std::tuple<int, int>>& moves, std::tuple<int, int, float>& move)
-{
-  auto distributions = get_distributions(game, moves);
+// float get_error_move(Tetravex& game, std::vector<std::tuple<int, int>>& moves, std::tuple<int, int, float>& move)
+// {
+//   auto distributions = get_distributions(game, moves);
 
-  int index = -1;
-  for (auto& m : moves)
-  {
-    index++;
-    if (std::get<0>(m) == std::get<0>(move) && std::get<1>(m) == std::get<1>(move))
-      break;
-  }
+//   int index = -1;
+//   for (auto& m : moves)
+//   {
+//     index++;
+//     if (std::get<0>(m) == std::get<0>(move) && std::get<1>(m) == std::get<1>(move))
+//       break;
+//   }
 
-  return distributions[index];
-}
+//   return distributions[index];
+// }
 
-float get_scores_factor(float current_error, float new_error)
-{
-  return 1 / std::exp(new_error - current_error);
-}
+// float get_scores_factor(float current_error, float new_error)
+// {
+//   return 1 / std::exp(new_error - current_error);
+// }
 
-float get_acceptance_probability(Tetravex& game, std::vector<std::tuple<int, int>> moves, float current_error,
-                                 float new_error, std::tuple<int, int, float>& move)
-{
-  float score_factor = get_scores_factor(current_error, new_error);
+// float get_acceptance_probability(Tetravex& game, std::vector<std::tuple<int, int>> moves, float current_error,
+//                                  float new_error, std::tuple<int, int, float>& move)
+// {
+//   float score_factor = get_scores_factor(current_error, new_error);
 
-  float proba_move_to_new_position = std::get<2>(move);
-  float proba_move_to_old_position = get_error_move(game, moves, move);
+//   float proba_move_to_new_position = std::get<2>(move);
+//   float proba_move_to_old_position = get_error_move(game, moves, move);
 
-  float alpha = score_factor * proba_move_to_old_position / proba_move_to_new_position;
+//   float alpha = score_factor * proba_move_to_old_position / proba_move_to_new_position;
 
-  // std::cout << "proba_move_to_new_position : " << proba_move_to_new_position
-  //           << ", proba_move_to_old_position : " << proba_move_to_old_position << std::endl;
-  // std::cout << "alpha : " << alpha << std::endl;
+//   // std::cout << "proba_move_to_new_position : " << proba_move_to_new_position
+//   //           << ", proba_move_to_old_position : " << proba_move_to_old_position << std::endl;
+//   // std::cout << "alpha : " << alpha << std::endl;
 
-  float acceptance = std::min(alpha, 1.0f);
+//   float acceptance = std::min(alpha, 1.0f);
 
-  return acceptance;
-}
+//   return acceptance;
+// }
 
 void solve(Tetravex& game, int max_iterations, bool verbose)
 {
@@ -135,6 +135,9 @@ void solve(Tetravex& game, int max_iterations, bool verbose)
   float current_error = get_error(game, unique_values);
   if (current_error == 0)
     return;
+
+  float temperature  = 1000;
+  float cooling_rate = 0.003;
 
   for (int i = 0; i < max_iterations; i++)
   {
@@ -161,25 +164,33 @@ void solve(Tetravex& game, int max_iterations, bool verbose)
       return;
     }
 
-    // Compute acceptance probability
-    float acceptance_probability = get_acceptance_probability(game, moves, current_error, new_error, move);
+    float new_score     = new_error;
+    float current_score = current_error;
 
-    // Generate a random number between 0 and 1
-    float random_number = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+    float alpha      = std::exp(-(new_score - current_score) / temperature);
+    float acceptance = std::min(alpha, 1.0f);
+    float r          = (float)rand() / (float)RAND_MAX;
 
     if (verbose)
     {
-      std::cout << "Iteration " << i << " : current error : " << new_error << ", previous error : " << current_error
-                << ", acceptance probability : " << acceptance_probability << std::endl;
+      std::cout << "Iteration " << i << " : Temperature : " << temperature << std::endl;
+      std::cout << "Current_error : " << current_error << ", new_error : " << new_error << std::endl;
+      std::cout << "Alpha : " << alpha << " Acceptance : " << acceptance << std::endl;
     }
 
-    if (random_number <= acceptance_probability)
+    if (r < acceptance)
     {
       current_error = new_error;
       if (verbose)
         std::cout << "Move applied" << std::endl;
     }
     else
+    {
       game.swap_tiles(std::get<0>(move), std::get<1>(move));
+      if (verbose)
+        std::cout << "Move rejected" << std::endl;
+    }
+
+    temperature *= 1 - cooling_rate;
   }
 }

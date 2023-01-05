@@ -75,12 +75,13 @@ float get_bad_place_average(Tetravex& game)
 
 float get_error(Tetravex& game, std::vector<std::pair<int, enum Direction>> unique_values)
 {
-  int   error_count         = get_error_count(game);
-  int   impossible_position = get_impossible_position(game, unique_values);
-  float bad_place           = get_bad_place_average(game);
+  int error_count = get_error_count(game);
+  return static_cast<float>(error_count);
+  // int   impossible_position = get_impossible_position(game, unique_values);
+  // float bad_place           = get_bad_place_average(game);
 
-  int   error  = error_count + impossible_position * 10;
-  float ferror = static_cast<float>(error) + bad_place * 5;
+  // int   error  = error_count + impossible_position * 10;
+  // float ferror = static_cast<float>(error) + bad_place * 5;
 
-  return ferror;
+  // return ferror;
 }
