@@ -136,8 +136,15 @@ void solve(Tetravex& game, int max_iterations, bool verbose)
   if (current_error == 0)
     return;
 
-  float temperature  = 1000;
-  float cooling_rate = 0.003;
+  float temperature = 250;
+  float min_temperature = 0.5f; // 0.99^n * 250 <= 0.5 <=> 1 / 500 <= 0.99^n <=> log(1 / 500) <=  n * log(0.99)  <=> n <= log(1 / 500) / log(0.99) =  618
+  float cooling_rate = 0.01; //  0.003 
+  if (verbose)
+  {
+    std::cout << "Initial temperature : " << temperature << std::endl;
+    std::cout << "Min temperature : " << min_temperature << std::endl;
+    std::cout << "Cooling rate : " << cooling_rate << std::endl;
+  }
 
   for (int i = 0; i < max_iterations; i++)
   {
@@ -167,18 +174,7 @@ void solve(Tetravex& game, int max_iterations, bool verbose)
     float new_score     = new_error;
     float current_score = current_error;
 
-    float alpha      = std::exp(-(new_score - current_score) / temperature);
-    float acceptance = std::min(alpha, 1.0f);
-    float r          = (float)rand() / (float)RAND_MAX;
-
-    if (verbose)
-    {
-      std::cout << "Iteration " << i << " : Temperature : " << temperature << std::endl;
-      std::cout << "Current_error : " << current_error << ", new_error : " << new_error << std::endl;
-      std::cout << "Alpha : " << alpha << " Acceptance : " << acceptance << std::endl;
-    }
-
-    if (r < acceptance)
+    if (new_score - current_score < 0)
     {
       current_error = new_error;
       if (verbose)
@@ -186,11 +182,34 @@ void solve(Tetravex& game, int max_iterations, bool verbose)
     }
     else
     {
-      game.swap_tiles(std::get<0>(move), std::get<1>(move));
+      float alpha      = std::exp(-(new_score - current_score) / temperature);
+      float acceptance = std::min(alpha, 1.0f);
+      float r          = (float)rand() / (float)RAND_MAX;
+
       if (verbose)
-        std::cout << "Move rejected" << std::endl;
+      {
+        std::cout << "Iteration " << i << " : Temperature : " << temperature << std::endl;
+        std::cout << "Current_error : " << current_error << ", new_error : " << new_error << std::endl;
+        std::cout << "Alpha : " << alpha << " Acceptance : " << acceptance << std::endl;
+      }
+
+      if (r < acceptance)
+      {
+        current_error = new_error;
+        if (verbose)
+          std::cout << "Move applied" << std::endl;
+      }
+      else
+      {
+        game.swap_tiles(std::get<0>(move), std::get<1>(move));
+        if (verbose)
+          std::cout << "Move rejected" << std::endl;
+      }
     }
 
-    temperature *= 1 - cooling_rate;
+    if (temperature > min_temperature)
+      temperature *= 1 - cooling_rate;
+    else
+      temperature = min_temperature;
   }
 }

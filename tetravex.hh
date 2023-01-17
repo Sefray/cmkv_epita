@@ -34,7 +34,8 @@ public:
   void write(std::string file_out);
 };
 
-void solve(Tetravex& game, int max_iteration = 100000, bool verbose = false);
+void solve(Tetravex& game, int max_iteration = 10000000, bool verbose = false);
+// void solve_empty(Tetravex& game, int max_iteration = 100000, bool verbose = false);
 
 // Used for solving
 float                       get_error(Tetravex& game, std::vector<std::pair<int, enum Direction>> unique_values);

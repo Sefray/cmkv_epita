@@ -1,5 +1,7 @@
 #ifdef TEST
 
+#include <iostream>
+
 #include "tetravex.hh"
 #include "utils.hh"
 
@@ -36,11 +38,19 @@ void test_full(int n)
   for (int i = 0; i < file_list.size(); i++)
   {
     Tetravex game(file_list[i]);
+
+    // std::cout << "Solving..." << std::endl; 
+    // game.display();
+
     solve(game);
     auto err = get_error_count(game);
     // cr_expect_eq(err, 0, "Error for File: %s", file_list[i].c_str());
     if (err == 0)
+    {
       passed++;
+      // game.display();
+      // std::cout << "Passed" << std::endl;
+    }
   }
 
   cr_assert_eq(passed, file_list.size(), "Passed %d over %d", passed, file_list.size());

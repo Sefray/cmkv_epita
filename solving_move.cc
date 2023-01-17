@@ -134,6 +134,6 @@ std::tuple<int, int, float> get_move(Tetravex& game, std::vector<std::tuple<int,
 {
   // // Add a possibility to return a random move
   // // if (rand() % 100 < 10)
-  // return get_a_random_move_with_distribution(game, moves);
-  return get_a_random_move(moves);
+  return get_a_random_move_with_distribution(game, moves);  // 1 2 | 2 1 | 1 1 | 2 2 | 1 2
+  // return get_a_random_move(moves);
 }
