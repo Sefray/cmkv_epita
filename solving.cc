@@ -80,45 +80,6 @@ std::vector<std::tuple<int, int>> get_all_moves(Tetravex& game)
   return moves;
 }
 
-// float get_error_move(Tetravex& game, std::vector<std::tuple<int, int>>& moves, std::tuple<int, int, float>& move)
-// {
-//   auto distributions = get_distributions(game, moves);
-
-//   int index = -1;
-//   for (auto& m : moves)
-//   {
-//     index++;
-//     if (std::get<0>(m) == std::get<0>(move) && std::get<1>(m) == std::get<1>(move))
-//       break;
-//   }
-
-//   return distributions[index];
-// }
-
-// float get_scores_factor(float current_error, float new_error)
-// {
-//   return 1 / std::exp(new_error - current_error);
-// }
-
-// float get_acceptance_probability(Tetravex& game, std::vector<std::tuple<int, int>> moves, float current_error,
-//                                  float new_error, std::tuple<int, int, float>& move)
-// {
-//   float score_factor = get_scores_factor(current_error, new_error);
-
-//   float proba_move_to_new_position = std::get<2>(move);
-//   float proba_move_to_old_position = get_error_move(game, moves, move);
-
-//   float alpha = score_factor * proba_move_to_old_position / proba_move_to_new_position;
-
-//   // std::cout << "proba_move_to_new_position : " << proba_move_to_new_position
-//   //           << ", proba_move_to_old_position : " << proba_move_to_old_position << std::endl;
-//   // std::cout << "alpha : " << alpha << std::endl;
-
-//   float acceptance = std::min(alpha, 1.0f);
-
-//   return acceptance;
-// }
-
 void solve(Tetravex& game, int max_iterations, bool verbose)
 {
   // Compute once the unique values
@@ -136,9 +97,10 @@ void solve(Tetravex& game, int max_iterations, bool verbose)
   if (current_error == 0)
     return;
 
-  float temperature = 250;
-  float min_temperature = 0.5f; // 0.99^n * 250 <= 0.5 <=> 1 / 500 <= 0.99^n <=> log(1 / 500) <=  n * log(0.99)  <=> n <= log(1 / 500) / log(0.99) =  618
-  float cooling_rate = 0.01; //  0.003 
+  float temperature     = 250;
+  float min_temperature = 0.5f; // 0.99^n * 250 <= 0.5 <=> 1 / 500 <= 0.99^n <=> log(1 / 500) <=  n * log(0.99)  <=> n
+                                // <= log(1 / 500) / log(0.99) =  618
+  float cooling_rate = 0.01;
   if (verbose)
   {
     std::cout << "Initial temperature : " << temperature << std::endl;

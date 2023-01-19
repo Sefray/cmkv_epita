@@ -72,11 +72,6 @@ std::vector<float> get_tiles_errors(Tetravex& game)
   std::vector<float> tiles_errors;
   for (int i = 0; i < game.size * game.size; i++)
     tiles_errors.push_back(get_error_tile_index(game, i));
-
-  // Display all tiles errors
-  // for (int i = 0; i < tiles_errors.size(); i++)
-  //   std::cout << "tile : " << i << " error : " << tiles_errors[i] << std::endl;
-
   return tiles_errors;
 }
 
@@ -97,13 +92,6 @@ std::vector<float> get_distributions(Tetravex& game, std::vector<std::tuple<int,
 
   for (auto& error : distribution)
     error /= sum;
-
-  // Display distribution
-  // for (int i = 1; i < distribution.size(); i++)
-  // {
-  //   std::cout << "move : " << std::get<0>(moves[i]) << " " << std::get<1>(moves[i]) << " proba : " << distribution[i]
-  //             << std::endl;
-  // }
 
   return distribution;
 }

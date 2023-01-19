@@ -39,17 +39,16 @@ void test_full(int n)
   {
     Tetravex game(file_list[i]);
 
-    // std::cout << "Solving..." << std::endl; 
-    // game.display();
-
     solve(game);
     auto err = get_error_count(game);
     // cr_expect_eq(err, 0, "Error for File: %s", file_list[i].c_str());
     if (err == 0)
     {
       passed++;
-      // game.display();
-      // std::cout << "Passed" << std::endl;
+    }
+    else
+    {
+      std::cout << "Error for File: " << file_list[i] << std::endl;
     }
   }
 
