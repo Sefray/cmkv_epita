@@ -17,7 +17,7 @@ static void Tetravex_n(benchmark::State& state, int n)
     for (auto& file : file_in)
     {
       Tetravex game(file);
-      solve(game);
+      solve(game, 1500000);
     }
   }
 
@@ -29,9 +29,19 @@ static void BM_Tetravex_s2(benchmark::State& state)
   Tetravex_n(state, 2);
 }
 
+static void BM_Tetravex_s3(benchmark::State& state)
+{
+  Tetravex_n(state, 3);
+}
+
 static void BM_Tetravex_s4(benchmark::State& state)
 {
   Tetravex_n(state, 4);
+}
+
+static void BM_Tetravex_s5(benchmark::State& state)
+{
+  Tetravex_n(state, 5);
 }
 
 static void BM_Tetravex_s6(benchmark::State& state)
@@ -41,7 +51,9 @@ static void BM_Tetravex_s6(benchmark::State& state)
 
 
 BENCHMARK(BM_Tetravex_s2)->Unit(benchmark::kSecond);
+BENCHMARK(BM_Tetravex_s3)->Unit(benchmark::kSecond);
 BENCHMARK(BM_Tetravex_s4)->Unit(benchmark::kSecond);
+BENCHMARK(BM_Tetravex_s5)->Unit(benchmark::kSecond);
 BENCHMARK(BM_Tetravex_s6)->Unit(benchmark::kSecond);
 
 BENCHMARK_MAIN();
