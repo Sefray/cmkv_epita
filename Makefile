@@ -12,7 +12,7 @@ test:
 	$(CXX) $(CXXFLAGS) -DTEST $(SRC) -o test -lcriterion
 
 check: test
-	./test --verbose
+	./test --verbose --jobs=1
 
 bench:
 	$(CXX) $(CXXFLAGS) -DBENCH $(SRC) -o bench -lbenchmark
