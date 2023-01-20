@@ -169,9 +169,6 @@ void solve(Tetravex& game, bool verbose)
       }
     }
 
-    if (temperature > min_temperature)
-      temperature *= 1 - cooling_rate;
-    else
-      temperature = min_temperature;
+    temperature = std::max(temperature * (1 - cooling_rate), min_temperature);
   }
 }
