@@ -86,8 +86,6 @@ std::vector<std::tuple<int, int>> get_all_moves(Tetravex& game)
 void metropolis_hasting_with_recuit(Tetravex game, bool verbose, float Tinit, float Tmin, float cooling_rate,
                                     std::promise<Tetravex>& p, std::future<Tetravex>& f, int thread = 0)
 {
-  std::cout << "Start solving with metropolis hasting with recuit, thread " << thread << std::endl;
-
   std::mt19937 mt;
   mt.seed(thread);
 
@@ -107,8 +105,15 @@ void metropolis_hasting_with_recuit(Tetravex game, bool verbose, float Tinit, fl
   float current_error = get_error(game, unique_values);
   if (current_error == 0)
   {
-    if (f.valid())
+    try
+    {
       p.set_value(game);
+    }
+    catch (const std::exception& e)
+    {
+      return;
+    }
+
     return;
   }
 
@@ -122,13 +127,6 @@ void metropolis_hasting_with_recuit(Tetravex game, bool verbose, float Tinit, fl
 
   for (int i = 0;; i++)
   {
-    if (i % 1000000 == 0)
-    {
-      std::cout << "Iteration " << i << " in thread " << thread << std::endl;
-      std::cout << "Current error : " << current_error << std::endl;
-    }
-
-
     if (verbose)
       game.display();
 
@@ -144,14 +142,21 @@ void metropolis_hasting_with_recuit(Tetravex game, bool verbose, float Tinit, fl
     float new_error = get_error(game, unique_values);
     if (new_error == 0)
     {
-      std::cout << "Solution found in " << i << " iterations in thread " << thread << std::endl;
       if (verbose)
       {
+        std::cout << "Solution found in " << i << " iterations in thread " << thread << std::endl;
         game.display();
       }
 
-      if (f.wait_for(std::chrono::milliseconds(15)) != std::future_status::ready && f.valid())
+      try
+      {
         p.set_value(game);
+      }
+      catch (const std::exception& e)
+      {
+        return;
+      }
+
       return;
     }
 
@@ -201,11 +206,7 @@ void metropolis_hasting_with_recuit(Tetravex game, bool verbose, float Tinit, fl
 void solve(Tetravex& game, bool verbose)
 {
   std::vector<std::tuple<float, float, float>> params_to_test = {
-      {250.f, 0.5f, 0.01f},  {300.f, 0.5f, 0.01f},   {225.f, 0.5f, 0.01f},  {250.f, 0.8f, 0.01f},  {250.f, 0.2f, 0.01f},
-      {250.f, 0.5f, 0.001f}, {1000.f, 0.5f, 0.001f}, {10.f, 0.8f, 0.0001f}, {350.f, 0.5f, 0.001f}, {250.f, 0.5f, 0.0001f},
-      {250.f, 0.5f, 0.00001f}
-  };
-
+      {250.f, 0.5f, 0.01f}, {300.f, 0.4f, 0.01f}, {10.f, 0.8f, 0.0001f}, {250.f, 0.5f, 0.0001f}};
 
   std::promise<Tetravex> p;
   std::future<Tetravex>  f = p.get_future();
@@ -215,13 +216,15 @@ void solve(Tetravex& game, bool verbose)
   std::vector<std::thread> threads;
   for (int i = 0; i < nb_threads; i++)
   {
+    Tetravex game_copy = Tetravex(game);
+
     auto [Tinit, Tmin, cooling_rate] = params_to_test[i % params_to_test.size()];
-    std::thread t = std::thread(metropolis_hasting_with_recuit, game, verbose, Tinit, Tmin, cooling_rate, std::ref(p),
-                                std::ref(f), i);
+    std::thread t = std::thread(metropolis_hasting_with_recuit, game_copy, verbose, Tinit, Tmin, cooling_rate,
+                                std::ref(p), std::ref(f), i);
     t.detach();
     threads.push_back(std::move(t));
 
-    if (f.wait_for(std::chrono::milliseconds(1)) == std::future_status::ready)
+    if (f.wait_for(std::chrono::milliseconds(10)) == std::future_status::ready)
       break;
   }
 
@@ -229,11 +232,8 @@ void solve(Tetravex& game, bool verbose)
   {
     if (f.wait_for(std::chrono::milliseconds(1)) == std::future_status::ready)
     {
-      std::cout << "The fastest thread returned!" << std::endl;
       game = f.get();
       break;
     }
   }
-
-  std::cout << "Finished" << std::endl;
 }

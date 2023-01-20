@@ -51,9 +51,21 @@ Tetravex::Tetravex(std::string filename)
   {
     delete[] tiles;
     std::cout << "Invalid file" << std::endl;
-    return;
   }
 }
+
+Tetravex::Tetravex(const Tetravex& other)
+{
+  size  = other.size;
+  tiles = new Tile[size * size];
+  for (int i = 0; i < size * size; ++i)
+  {
+    for (int j = 0; j < 4; ++j)
+      tiles[i].value[j] = other.tiles[i].value[j];
+    tiles[i].is_locked = other.tiles[i].is_locked;
+  }
+}
+
 
 void Tetravex::write(std::string file_out) const
 {

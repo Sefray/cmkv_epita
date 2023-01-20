@@ -27,6 +27,7 @@ public:
   Tile* tiles;
 
   Tetravex(std::string file_in);
+  Tetravex(const Tetravex& game);
 
   Tile& get_tile(int x, int y) const;
   void  swap_tiles(int a, int b);
