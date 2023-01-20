@@ -84,7 +84,7 @@ std::vector<std::tuple<int, int>> get_all_moves(Tetravex& game)
 
 
 void metropolis_hasting_with_recuit(Tetravex game, bool verbose, float Tinit, float Tmin, float cooling_rate,
-                                    std::promise<Tetravex>& p, std::future<Tetravex>& f, int thread = 0)
+                                    std::promise<Tetravex>& p, int thread = 0)
 {
   std::mt19937 mt;
   mt.seed(thread);
@@ -219,8 +219,8 @@ void solve(Tetravex& game, bool verbose)
     Tetravex game_copy = Tetravex(game);
 
     auto [Tinit, Tmin, cooling_rate] = params_to_test[i % params_to_test.size()];
-    std::thread t = std::thread(metropolis_hasting_with_recuit, game_copy, verbose, Tinit, Tmin, cooling_rate,
-                                std::ref(p), std::ref(f), i);
+    std::thread t =
+        std::thread(metropolis_hasting_with_recuit, game_copy, verbose, Tinit, Tmin, cooling_rate, std::ref(p), i);
     t.detach();
     threads.push_back(std::move(t));
 
