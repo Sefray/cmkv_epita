@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
   std::string in_file = argv[1];
 
   Tetravex game(in_file);
-  solve(game, 100000, verbose);
+  solve(game, verbose);
 
   if (verbose)
     return 0;

@@ -17,7 +17,7 @@ static void Tetravex_n(benchmark::State& state, int n)
     for (auto& file : file_in)
     {
       Tetravex game(file);
-      solve(game, 1500000);
+      solve(game);
     }
   }
 

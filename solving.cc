@@ -80,7 +80,7 @@ std::vector<std::tuple<int, int>> get_all_moves(Tetravex& game)
   return moves;
 }
 
-void solve(Tetravex& game, int max_iterations, bool verbose)
+void solve(Tetravex& game, bool verbose)
 {
   // Compute once the unique values
   auto unique_values = get_unique_values(game);
@@ -97,10 +97,10 @@ void solve(Tetravex& game, int max_iterations, bool verbose)
   if (current_error == 0)
     return;
 
+  int   max_iterations  = 1000000;
   float temperature     = 250;
-  float min_temperature = 0.5f; // 0.99^n * 250 <= 0.5 <=> 1 / 500 <= 0.99^n <=> log(1 / 500) <=  n * log(0.99)  <=> n
-                                // <= log(1 / 500) / log(0.99) =  618
-  float cooling_rate = 0.01;
+  float min_temperature = 0.5f;
+  float cooling_rate    = 0.01;
   if (verbose)
   {
     std::cout << "Initial temperature : " << temperature << std::endl;
