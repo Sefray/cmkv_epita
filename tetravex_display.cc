@@ -12,7 +12,7 @@ void display_horizontal_line(int size)
   std::cout << "+" << std::endl;
 }
 
-void display_line_north_south(Tetravex& game, int line, int direction)
+void display_line_north_south(const Tetravex& game, int line, int direction)
 {
   for (int i = 0; i < game.size; ++i)
   {
@@ -22,7 +22,7 @@ void display_line_north_south(Tetravex& game, int line, int direction)
   std::cout << "|" << std::endl;
 }
 
-void display_line_west_east(Tetravex& game, int line)
+void display_line_west_east(const Tetravex& game, int line)
 {
   for (int i = 0; i < game.size; ++i)
   {
@@ -32,14 +32,14 @@ void display_line_west_east(Tetravex& game, int line)
   std::cout << "|" << std::endl;
 }
 
-void display_line(Tetravex& game, int line)
+void display_line(const Tetravex& game, int line)
 {
   display_line_north_south(game, line, NORTH);
   display_line_west_east(game, line);
   display_line_north_south(game, line, SOUTH);
 }
 
-void Tetravex::display()
+void Tetravex::display() const
 {
   for (int line = 0; line < size; line++)
   {

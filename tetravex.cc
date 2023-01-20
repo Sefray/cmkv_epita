@@ -55,7 +55,7 @@ Tetravex::Tetravex(std::string filename)
   }
 }
 
-void Tetravex::write(std::string file_out)
+void Tetravex::write(std::string file_out) const
 {
   std::ofstream file(file_out);
   if (!file.is_open())
@@ -75,7 +75,7 @@ void Tetravex::write(std::string file_out)
   file.close();
 }
 
-Tile& Tetravex::get_tile(int x, int y)
+Tile& Tetravex::get_tile(int x, int y) const
 {
   return tiles[x + y * size];
 }

@@ -3,7 +3,7 @@
 #include <tuple>
 #include <vector>
 
-int get_error_count(Tetravex& game)
+int get_error_count(const Tetravex& game)
 {
   int error_count = 0;
 
@@ -47,7 +47,7 @@ bool is_well_positioned(int x, int y, enum Direction direction, int size)
   return false;
 }
 
-int get_impossible_position(Tetravex& game, std::vector<std::pair<int, enum Direction>> unique_values)
+int get_impossible_position(const Tetravex& game, const std::vector<std::pair<int, enum Direction>>& unique_values)
 {
   int impossible_position = 0;
 
@@ -70,10 +70,12 @@ float get_bad_place_average(Tetravex& game)
     for (int x = 0; x < game.size; x++)
       bad_place += get_error_tile(game, x, y);
 
+  bad_place /= static_cast<float>(game.size * game.size);
+
   return bad_place;
 }
 
-float get_error(Tetravex& game, std::vector<std::pair<int, enum Direction>> unique_values)
+float get_error(const Tetravex& game, const std::vector<std::pair<int, enum Direction>>& unique_values)
 {
   int error_count = get_error_count(game);
   return static_cast<float>(error_count);
@@ -81,7 +83,7 @@ float get_error(Tetravex& game, std::vector<std::pair<int, enum Direction>> uniq
   // float bad_place           = get_bad_place_average(game);
 
   // int   error  = error_count + impossible_position * 10;
-  // float ferror = static_cast<float>(error) + bad_place * 5;
+  // float ferror = static_cast<float>(error); // + bad_place * 5;
 
   // return ferror;
 }

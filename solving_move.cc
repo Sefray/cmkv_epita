@@ -4,16 +4,15 @@
 #include <tuple>
 #include <vector>
 
-std::tuple<int, int, float> get_a_random_move(std::vector<std::tuple<int, int>> moves)
+const std::tuple<int, int>& get_a_random_move(const std::vector<std::tuple<int, int>>& moves, std::mt19937& mt)
 {
-  int index = rand() % moves.size();
-
-  std::tuple<int, int, float> ret = {std::get<0>(moves[index]), std::get<1>(moves[index]), 1 / (float)moves.size()};
-
+  std::uniform_int_distribution<int> uni(0, moves.size() - 1);
+  int                                index = uni(mt);
+  auto&                              ret   = moves[index];
   return ret;
 }
 
-float get_error_tile_index(Tetravex& game, int index)
+float get_error_tile_index(const Tetravex& game, int index)
 {
   int x = index % game.size;
   int y = index / game.size;
@@ -22,7 +21,7 @@ float get_error_tile_index(Tetravex& game, int index)
 }
 
 
-float get_error_tile(Tetravex& game, int x, int y)
+float get_error_tile(const Tetravex& game, int x, int y)
 {
   Tile& tile = game.get_tile(x, y);
 
@@ -67,7 +66,7 @@ float get_error_tile(Tetravex& game, int x, int y)
   return static_cast<float>(ctile_bad_place) / static_cast<float>(ctile_possible_place);
 }
 
-std::vector<float> get_tiles_errors(Tetravex& game)
+std::vector<float> get_tiles_errors(const Tetravex& game)
 {
   std::vector<float> tiles_errors;
   for (int i = 0; i < game.size * game.size; i++)
@@ -76,7 +75,7 @@ std::vector<float> get_tiles_errors(Tetravex& game)
 }
 
 
-std::vector<float> get_distributions(Tetravex& game, std::vector<std::tuple<int, int>> moves)
+std::vector<float> get_distributions(const Tetravex& game, const std::vector<std::tuple<int, int>> moves)
 {
   std::vector<float> tiles_errors = get_tiles_errors(game);
 
@@ -97,31 +96,18 @@ std::vector<float> get_distributions(Tetravex& game, std::vector<std::tuple<int,
 }
 
 
-std::tuple<int, int, float> get_a_random_move_with_distribution(Tetravex& game, std::vector<std::tuple<int, int>> moves)
+const std::tuple<int, int>& get_a_random_move_with_distribution(const Tetravex& game, const std::vector<std::tuple<int, int>>& moves,
+                                                          std::mt19937& mt)
 {
-  std::vector<float> distribution = get_distributions(game, moves);
-
-  float random = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
-  float sum2   = 0.0f;
-
-  for (int i = 0; i < distribution.size(); i++)
-  {
-    sum2 += distribution[i];
-    if (sum2 > random)
-    {
-      std::tuple<int, int, float> ret = {std::get<0>(moves[i]), std::get<1>(moves[i]), distribution[i]};
-      return ret;
-    }
-  }
-
-  std::tuple<int, int, float> ret = {std::get<0>(moves[0]), std::get<1>(moves[0]), distribution[0]};
+  std::vector<float>              distributions = get_distributions(game, moves);
+  std::discrete_distribution<int> distribution(distributions.begin(), distributions.end());
+  int                             random = distribution(mt);
+  auto&                           ret    = moves[random];
   return ret;
 }
 
-std::tuple<int, int, float> get_move(Tetravex& game, std::vector<std::tuple<int, int>> moves)
+const std::tuple<int, int>& get_move(const Tetravex& game, const std::vector<std::tuple<int, int>>& moves, std::mt19937& mt)
 {
-  // // Add a possibility to return a random move
-  // // if (rand() % 100 < 10)
-  return get_a_random_move_with_distribution(game, moves);  // 1 2 | 2 1 | 1 1 | 2 2 | 1 2
-  // return get_a_random_move(moves);
+  return get_a_random_move_with_distribution(game, moves, mt);
+  // return get_a_random_move(moves, mt);
 }

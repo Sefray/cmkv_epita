@@ -2,10 +2,11 @@
 
 #include <iostream>
 #include <math.h>
+#include <thread>
 #include <tuple>
 #include <vector>
 
-std::vector<int> get_histogram(Tetravex& game)
+std::vector<int> get_histogram(const Tetravex& game)
 {
   std::vector<int> histo(10, 0);
 
@@ -22,7 +23,7 @@ std::vector<int> get_histogram(Tetravex& game)
   return histo;
 }
 
-std::tuple<int, int, enum Direction> get_tile_position_with_value(Tetravex& game, int value)
+std::tuple<int, int, enum Direction> get_tile_position_with_value(const Tetravex& game, int value)
 {
   for (int y = 0; y < game.size; y++)
     for (int x = 0; x < game.size; x++)
@@ -42,7 +43,7 @@ std::tuple<int, int, enum Direction> get_tile_position_with_value(Tetravex& game
 }
 
 
-std::vector<std::pair<int, enum Direction>> get_unique_values(Tetravex& game)
+std::vector<std::pair<int, enum Direction>> get_unique_values(const Tetravex& game)
 {
   std::vector<int>                            histo = get_histogram(game);
   std::vector<std::pair<int, enum Direction>> unique_values;
@@ -80,8 +81,14 @@ std::vector<std::tuple<int, int>> get_all_moves(Tetravex& game)
   return moves;
 }
 
-void solve(Tetravex& game, bool verbose)
+
+void metropolis_hasting_with_recuit(Tetravex& game, bool verbose, float Tinit, float Tmin, float cooling_rate)
 {
+  std::mt19937 mt;
+  mt.seed(std::hash<std::thread::id>()(std::this_thread::get_id()));
+
+  static std::uniform_real_distribution<float> uni_real(0.0f, 1.0f);
+
   // Compute once the unique values
   auto unique_values = get_unique_values(game);
   auto moves         = get_all_moves(game);
@@ -97,37 +104,34 @@ void solve(Tetravex& game, bool verbose)
   if (current_error == 0)
     return;
 
-  int   max_iterations  = 1000000;
-  float temperature     = 250;
-  float min_temperature = 0.5f;
-  float cooling_rate    = 0.01;
+  float T = Tinit;
   if (verbose)
   {
-    std::cout << "Initial temperature : " << temperature << std::endl;
-    std::cout << "Min temperature : " << min_temperature << std::endl;
+    std::cout << "Initial temperature : " << T << std::endl;
+    std::cout << "Min temperature : " << Tmin << std::endl;
     std::cout << "Cooling rate : " << cooling_rate << std::endl;
   }
 
-  for (int i = 0; i < max_iterations; i++)
+  for (int i = 0;; i++)
   {
     if (verbose)
       game.display();
 
     // Get the move to apply
-    auto move = get_move(game, moves);
+    const auto& [ta, tb] = get_move(game, moves, mt);
 
     // Apply the move
-    game.swap_tiles(std::get<0>(move), std::get<1>(move));
+    game.swap_tiles(ta, tb);
     if (verbose)
-      std::cout << "Swap tiles " << std::get<0>(move) << " and " << std::get<1>(move) << std::endl;
+      std::cout << "Swap tiles " << ta << " and " << tb << std::endl;
 
     // Get the new error rate
     float new_error = get_error(game, unique_values);
     if (new_error == 0)
     {
+      std::cout << "Solution found in " << i << " iterations" << std::endl;
       if (verbose)
       {
-        std::cout << "Solution found in " << i << " iterations" << std::endl;
         game.display();
       }
       return;
@@ -144,13 +148,13 @@ void solve(Tetravex& game, bool verbose)
     }
     else
     {
-      float alpha      = std::exp(-(new_score - current_score) / temperature);
+      float alpha      = std::exp(-(new_score - current_score) / T);
       float acceptance = std::min(alpha, 1.0f);
-      float r          = (float)rand() / (float)RAND_MAX;
+      float r          = uni_real(mt);
 
       if (verbose)
       {
-        std::cout << "Iteration " << i << " : Temperature : " << temperature << std::endl;
+        std::cout << "Iteration " << i << " : Temperature : " << T << std::endl;
         std::cout << "Current_error : " << current_error << ", new_error : " << new_error << std::endl;
         std::cout << "Alpha : " << alpha << " Acceptance : " << acceptance << std::endl;
       }
@@ -163,12 +167,21 @@ void solve(Tetravex& game, bool verbose)
       }
       else
       {
-        game.swap_tiles(std::get<0>(move), std::get<1>(move));
+        game.swap_tiles(ta, tb);
         if (verbose)
           std::cout << "Move rejected" << std::endl;
       }
     }
 
-    temperature = std::max(temperature * (1 - cooling_rate), min_temperature);
+    // std::cout << "Iteration " << i << " : Temperature : " << T << ", error : " << current_error << std::endl;
+    T = std::max(T * (1 - cooling_rate), Tmin);
   }
+
+  std::cout << "No solution found" << std::endl;
+}
+
+
+void solve(Tetravex& game, bool verbose)
+{
+  metropolis_hasting_with_recuit(game, verbose, 250.f, 0.5f, 0.01f);
 }

@@ -34,22 +34,14 @@ void test_full(int n)
 {
   auto file_list = get_file_list(n);
 
-  int passed = 0;
+  int passed = file_list.size();
   for (int i = 0; i < file_list.size(); i++)
   {
     Tetravex game(file_list[i]);
 
     solve(game);
     auto err = get_error_count(game);
-    // cr_expect_eq(err, 0, "Error for File: %s", file_list[i].c_str());
-    if (err == 0)
-    {
-      passed++;
-    }
-    else
-    {
-      std::cout << "Error for File: " << file_list[i] << std::endl;
-    }
+    cr_expect_eq(err, 0, "Error for File: %s", file_list[i].c_str(), passed--);
   }
 
   cr_assert_eq(passed, file_list.size(), "Passed %d over %d", passed, file_list.size());

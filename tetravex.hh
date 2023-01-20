@@ -1,5 +1,6 @@
 #pragma once
 
+#include <random>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -27,25 +28,24 @@ public:
 
   Tetravex(std::string file_in);
 
-  Tile& get_tile(int x, int y);
+  Tile& get_tile(int x, int y) const;
   void  swap_tiles(int a, int b);
 
-  void display();
-  void write(std::string file_out);
+  void display() const;
+  void write(std::string file_out) const;
 };
 
-void solve(Tetravex& game, int max_iteration = 1000000, bool verbose = false);
-// void solve_empty(Tetravex& game, int max_iteration = 100000, bool verbose = false);
+void solve(Tetravex& game, bool verbose = false);
 
 // Used for solving
-float                       get_error(Tetravex& game, std::vector<std::pair<int, enum Direction>> unique_values);
-std::tuple<int, int, float> get_move(Tetravex& game, std::vector<std::tuple<int, int>> moves);
+float                 get_error(const Tetravex& game, const std::vector<std::pair<int, enum Direction>>& unique_values);
+const std::tuple<int, int>& get_move(const Tetravex& game, const std::vector<std::tuple<int, int>>& moves, std::mt19937& mt);
 
-std::vector<float> get_distributions(Tetravex& game, std::vector<std::tuple<int, int>> moves);
+std::vector<float> get_distributions(const Tetravex& game, std::vector<std::tuple<int, int>> moves);
 
-std::tuple<int, int, enum Direction> get_tile_position_with_value(Tetravex& game, int value);
-float                                get_error_tile(Tetravex& game, int x, int y);
-float                                get_error_tile_index(Tetravex& game, int index);
+std::tuple<int, int, enum Direction> get_tile_position_with_value(const Tetravex& game, int value);
+float                                get_error_tile(const Tetravex& game, int x, int y);
+float                                get_error_tile_index(const Tetravex& game, int index);
 
 // For testing purpose
-int get_error_count(Tetravex& game);
+int get_error_count(const Tetravex& game);
